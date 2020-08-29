@@ -58,6 +58,23 @@ class Dom {
     removeClass(className) {
         this.$el.classList.remove(className)
     }
+    id(parse) {
+        if (parse) {
+            const parsed = this.id().split(':')
+            return {
+                row: +parsed[0],
+                col: +parsed[1]
+            }
+        }
+        return this.data.id
+    }
+    focus() {
+        this.$el.focus()
+        return this
+    }
+    text(text) {
+        this.$el.textContent = text
+    }
 }
 
 export function $(selector) {
