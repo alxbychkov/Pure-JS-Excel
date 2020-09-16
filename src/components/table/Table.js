@@ -8,6 +8,8 @@ import { isCell } from '@/components/table/table.functions'
 import { nextSelector } from '@/components/table/table.functions'
 import { matrix } from './table.functions'
 import * as actions from '@/redux/actions'
+import { defaultStyles } from '../../constats'
+import { parse } from '../../core/parse'
 
 export class Table extends ExcelComponent {
   static className = 'excel__table'
@@ -15,7 +17,7 @@ export class Table extends ExcelComponent {
   constructor($root, options) {
     super($root, {
       name: 'Table',
-      listeners: ['click', 'mousedown', 'keydown', 'input'],
+      listeners: ['mousedown', 'keydown', 'input'],
       ...options
     })
   }
@@ -28,26 +30,30 @@ export class Table extends ExcelComponent {
   init() {
     super.init()
     this.selectCell(this.$root.find('[data-id="0:0"]'))
-    this.$on('formula:input', text => {
-      this.selection.current.text(text)
-      this.updateTextInStore(text)
+    this.$on('formula:input', value => {
+      this.selection.current
+          .attr('data-value', value)
+          .text(parse(value))
+      this.updateTextInStore(value)
     })
     this.$on('formula:done', () => {
       this.selection.current.focus()
     })
-    this.$subscribe(state => {
-      console.log('TableState', state)
+    this.$on('toolbar:applyStyle', value => {
+      this.selection.applyStyle(value)
+      this.$dispatch(actions.applyStyle({
+        value,
+        ids: this.selection.selectedIds
+      }))
     })
   }
 
   selectCell($cell) {
     this.selection.select($cell)
     this.$emit('table:select', $cell)
+    const styles = $cell.getStyles(Object.keys(defaultStyles))
+    this.$dispatch(actions.changeStyles(styles))
   }
-  onClick(event) {
-
-  }
-
   async resizeTable(event) {
     try {
       const data = await resizeHandler(this.$root, event)
@@ -97,7 +103,6 @@ export class Table extends ExcelComponent {
     }))
   }
   onInput(event) {
-    // this.$emit('table:input', $(event.target))
     this.updateTextInStore($(event.target).text())
   }
 }
