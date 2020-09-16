@@ -13,7 +13,6 @@ export class ExcelStateComponent extends ExcelComponent {
     }
     setState(newState) {
         this.state = {...this.state, ...newState}
-        console.log('this tempalte', this.template)
         this.$root.html(this.template)
     }
 }
