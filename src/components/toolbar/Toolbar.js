@@ -20,13 +20,9 @@ export class Toolbar extends ExcelStateComponent {
     return createToolbar(this.state)
   }
   toHTML() {
-            // eslint-disable-next-line no-debugger
-            debugger
     return this.template
   }
   storeChanged(changes) {
-        // eslint-disable-next-line no-debugger
-        debugger
     this.setState(changes.currentStyles)
   }
   onClick(event) {
