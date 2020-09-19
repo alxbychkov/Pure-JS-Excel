@@ -30,13 +30,11 @@ export class Table extends ExcelComponent {
     this.selectCell(this.$root.find('[data-id="0:0"]'))
     this.$on('formula:input', text => {
       this.selection.current.text(text)
+      this.updateTextinStore(text)
     })
     this.$on('formula:done', () => {
       this.selection.current.focus()
     })
-    // this.$subscribe(state => {
-    //   console.log('TableState', state)
-    // })
   }
 
   selectCell($cell) {
@@ -85,8 +83,15 @@ export class Table extends ExcelComponent {
       this.selectCell($next)
     }
   }
+  updateTextinStore(value) {
+    this.$dispatch(actions.changeText({
+      id: this.selection.current.id(),
+      value
+    }))
+  }
   onInput(event) {
-    this.$emit('table:input', $(event.target))
+    // this.$emit('table:input', $(event.target))
+    this.updateTextinStore($(event.target).text())
   }
 }
 
