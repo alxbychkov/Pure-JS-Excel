@@ -9,6 +9,7 @@ import { nextSelector } from '@/components/table/table.functions'
 import { matrix } from './table.functions'
 import * as actions from '@/redux/actions'
 import { defaultStyles } from '../../constants'
+import { parse } from '../../core/parse'
 
 export class Table extends ExcelComponent {
   static className = 'excel__table'
@@ -29,9 +30,11 @@ export class Table extends ExcelComponent {
   init() {
     super.init()
     this.selectCell(this.$root.find('[data-id="0:0"]'))
-    this.$on('formula:input', text => {
-      this.selection.current.text(text)
-      this.updateTextinStore(text)
+    this.$on('formula:input', value => {
+      this.selection.current
+        .attr('data-value', value)
+        .text(parse(value))
+      this.updateTextinStore(value)
     })
     this.$on('formula:done', () => {
       this.selection.current.focus()
@@ -49,7 +52,6 @@ export class Table extends ExcelComponent {
     this.selection.select($cell)
     this.$emit('table:select', $cell)
     const styles = $cell.getStyles(Object.keys(defaultStyles))
-    console.log('Styles to dispatch', styles)
     this.$dispatch(actions.changeStyles(styles))
   }
 
@@ -101,7 +103,6 @@ export class Table extends ExcelComponent {
     }))
   }
   onInput(event) {
-    // this.$emit('table:input', $(event.target))
     this.updateTextinStore($(event.target).text())
   }
 }
